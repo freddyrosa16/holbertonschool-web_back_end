@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """ Calculate the length of each element in the given list. """
 from typing import Iterable, Sequence, List, Tuple
 
