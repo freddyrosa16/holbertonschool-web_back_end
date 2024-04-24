@@ -3,4 +3,4 @@
 
 
 def floor(n: float) -> float:
-    return 10//n
+    return int(n)
