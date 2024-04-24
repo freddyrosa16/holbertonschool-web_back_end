@@ -5,5 +5,6 @@ square of `v` as the second element. """
 from typing import Tuple, Union
 
 
-def to_kv(k: str, v: Union[int, float]) -> Tuple[str, Union[int, float]]:
+def to_kv(k: str, v: Union[int, float]) -> Tuple[str, float]:
+    """ This function takes a string and  a int or float and returns a float. """
     return (k, v**2)
