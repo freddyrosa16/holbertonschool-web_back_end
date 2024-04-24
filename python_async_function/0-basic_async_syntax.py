@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+""" This async function takes an int that waits for a random delay. """
 import random
 import asyncio
 
