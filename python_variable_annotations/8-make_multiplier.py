@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """Returns a function that multiplies a given number by the specified multiplier."""
 from typing import Callable
 
