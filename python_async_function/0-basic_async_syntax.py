@@ -5,6 +5,7 @@ import asyncio
 
 
 async def wait_random(max_delay: int = 10) -> float:
+    """ Async function that takes the time of the delay. """
     delay = random.randrange(0, max_delay)
     await asyncio.sleep(delay)
     return delay
