@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-""" This async function takes an int that waits for a random delay. """
-import random
+"""async syntax"""
+
 import asyncio
+import random
 
 
 async def wait_random(max_delay: int = 10) -> float:
-    """ Async function that takes the time of the delay. """
-    delay = random.randrange(0, max_delay)
+    """wait random"""
+    delay = random.uniform(0, max_delay)
     await asyncio.sleep(delay)
     return delay
