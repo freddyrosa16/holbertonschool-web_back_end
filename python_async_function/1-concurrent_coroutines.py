@@ -7,5 +7,5 @@ wait_random = __import__('0-basic_async_syntax').wait_random
 
 async def wait_n(n: int, max_delay: int) -> List[float]:
     """ Store  the results in a list. """
-    results = [await wait_random(max_delay) for _ in range(n)]
-    return results.sort()
+    routines = [randwait(max_delay) for i in range(n)]
+    return [await x for x in asyncio.as_completed(routines)]
