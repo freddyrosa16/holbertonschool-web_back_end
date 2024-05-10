@@ -12,4 +12,4 @@ class Building {
   } // End getter for sqft attribute
 }
 
-  export default Building;
+export default Building;
