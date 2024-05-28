@@ -8,5 +8,4 @@ const updateStudentGradeByCity = (students, city, newGrade) => students
   else newRecord.grade = 'N/A';
   return newRecord;
 });
-
 export default updateStudentGradeByCity;
