@@ -1,79 +1,115 @@
-
 #!/usr/bin/env python3
 """
-Main file for the API
+Contains 'BasicAuth', which is an empty
+child class of 'Auth'.
 """
-from os import getenv
-from api.v1.views import app_views
-from flask import Flask, jsonify, abort, request
-from flask_cors import (CORS, cross_origin)
-import os
-
+import base64
+from typing import Tuple, Optional
+import binascii
 from api.v1.auth.auth import Auth
-from api.v1.auth.basic_auth import BasicAuth
 from models.user import User
 
-app = Flask(__name__)
-app.register_blueprint(app_views)
-CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
-auth: Auth = None
-
-if os.environ.get("AUTH_TYPE", None) == "basic_auth":
-    auth = BasicAuth()
-else:
-    auth = Auth()
-
-
-@app.before_request
-def authenticate() -> None:
+class BasicAuth(Auth):
     """
-    Authenticates the request
+    Child class of 'Auth'.
     """
-    if auth is None:
-        return
 
-    if not auth.require_auth(
-        request.path,
-        ['/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']
-    ):
-        return
+    def extract_base64_authorization_header(
+        self,
+        authorization_header: str
+    ) -> str:
+        """_summary_
 
-    AUTH_HEADER: str = auth.authorization_header(request)
+        Args:
+            authorization_header (str): _description_
 
-    if AUTH_HEADER is None:
-        abort(401)
+        Returns:
+            str: _description_
+        """
+        head = "Basic "
 
-    USER: User = auth.current_user(AUTH_HEADER)
+        if authorization_header is None:
+            return None
+        if not isinstance(authorization_header, str):
+            return None
+        if not authorization_header.startswith(head):
+            return None
 
-    if USER is None:
-        abort(403)
+        return authorization_header[len(head):]
 
+    def decode_base64_authorization_header(
+            self,
+            base64_authorization_header: str) -> str:
+        """
+        Decodes the Base64 Authorization
+        """
+        if base64_authorization_header is None:
+            return None
+        if not isinstance(base64_authorization_header, str):
+            return None
 
-@app.errorhandler(401)
-def unauthorized(error) -> str:
-    """
-    Unauthorized (401) error handler
-    """
-    return jsonify({"error": "Unauthorized"}), 401
+        try:
+            return base64.b64decode(base64_authorization_header).decode()
+        except (binascii.Error, ValueError, UnicodeDecodeError):
+            return None
 
+    def extract_user_credentials(
+            self,
+            decoded_base64_authorization_header: str) -> Tuple[str, str]:
+        """
+        Extracts the user credentials
+        """
+        if decoded_base64_authorization_header is None:
+            return (None, None)
+        if not isinstance(decoded_base64_authorization_header, str):
+            return (None, None)
+        if ':' not in decoded_base64_authorization_header:
+            return (None, None)
 
-@app.errorhandler(403)
-def unauthorized(error) -> str:
-    """
-    Forbidden (403) error handler
-    """
-    return jsonify({"error": "Forbidden"}), 403
+        return tuple(
+            decoded_base64_authorization_header.split(':')
+        )
 
+    def user_object_from_credentials(
+            self,
+            user_email: str,
+            user_pwd: str) -> Optional[User]:
+        """
+        Returns the User object
+        """
 
-@app.errorhandler(404)
-def not_found(error) -> str:
-    """ Not found handler
-    """
-    return jsonify({"error": "Not found"}), 404
+        if user_email is None or not isinstance(user_email, str):
+            return None
+        if user_pwd is None or not isinstance(user_pwd, str):
+            return None
 
+        try:
+            for user in User.all():
+                if user.email == user_email and \
+                        user.is_valid_password(user_pwd):
+                    return user
+        except KeyError:
+            pass
 
-if __name__ == "__main__":
-    host = getenv("API_HOST", "0.0.0.0")
-    port = getenv("API_PORT", "5000")
-    app.run(host=host, port=port)
+        return None
+
+    def current_user(self, request=None) -> Optional[User]:
+        """
+        Returns the User object
+        """
+        base_64_auth_header = self.extract_base64_authorization_header(
+            request
+        )
+
+        auth_header = self.decode_base64_authorization_header(
+            base_64_auth_header
+        )
+
+        user_credentials = self.extract_user_credentials(
+            auth_header
+        )
+
+        result = self.user_object_from_credentials(*user_credentials)
+
+        return result
