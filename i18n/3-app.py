@@ -2,33 +2,30 @@
 """
 Welcome to Holberton
 """
-from flask import Flask, render_template, request
-from flask_babel import Babel, _
-
-
-class Config:
-    """
-    Config class for setting available languages and default locale and timezone
-    """
-    LANGUAGES = ["en", "fr"]
-    BABEL_DEFAULT_LOCALE = "en"
-    BABEL_DEFAULT_TIMEZONE = "UTC"
-
-
+from flask import Flask, render_template, g, request
+from flask_babel import Babel
 app = Flask(__name__)
-app.config.from_object(Config)
-
 babel = Babel(app)
 
 
+class Config(object):
+    """
+    languages config
+    """
+    LANGUAGES = ["en", "fr"]
+    BABEL_DEFAULT_LOCALE = 'en'
+    BABEL_DEFAULT_TIMEZONE = 'UTC'
+
+
+@babel.localeselector
 def get_locale():
     """
-    Determine the best match with our supported languages.
+    the best match with our supported languages.
     """
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 
-babel.init_app(app, locale_selector=get_locale)
+app.config.from_object(Config)
 
 
 @app.route("/", methods=['GET'])
@@ -36,8 +33,4 @@ def helloWorld():
     """
     Hello world
     """
-    return render_template('0-index.html', title=_("home_title"), header=_("home_header"))
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    return render_template('3-index.html')
