@@ -1,35 +1,28 @@
 #!/usr/bin/env python3
 """
-basic app
+Welcome Holberton
 """
-import flask
-import flask_babel
-from os import environ
+from flask import Flask, render_template
+from flask_babel import Babel
+app = Flask(__name__)
+babel = Babel(app)
 
 
-class Config:
+class Config(object):
     """
-    language and babel config
+    languages config
     """
     LANGUAGES = ["en", "fr"]
-    BABEL_DEFAULT_LOCALE = "en"
-    BABEL_DEFAULT_TIMEZONE = "UTC"
+    BABEL_DEFAULT_LOCALE = 'en'
+    BABEL_DEFAULT_TIMEZONE = 'UTC'
 
 
-app = flask.Flask(__name__)
 app.config.from_object(Config)
-babel = flask_babel.Babel(app)
 
 
-@app.route("/", strict_slashes=False)
-def home() -> flask.Response:
+@app.route("/", methods=['GET'])
+def helloWorld():
     """
-    homepage
+    Hello world
     """
-    return flask.render_template("1-index.html")
-
-
-if __name__ == "__main__":
-    app.run(
-        environ.get("HOST"), environ.get("PORT")
-    )
+    return render_template('1-index.html')

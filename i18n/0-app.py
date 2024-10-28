@@ -1,23 +1,16 @@
-
 #!/usr/bin/env python3
 """
-basic app
+Welcome to Holberton
 """
-import flask
-from os import environ
+from flask import Flask, render_template
+from flask_babel import Babel
+app = Flask(__name__)
+babel = Babel(app)
 
-app = flask.Flask(__name__)
 
-
-@app.route("/", strict_slashes=False)
-def home():
+@app.route("/", methods=['GET'])
+def helloWorld():
     """
-    return home template
+    Hello world
     """
-    return flask.render_template("0-index.html")
-
-
-if __name__ == "__main__":
-    app.run(
-        environ.get("HOST"), environ.get("PORT")
-    )
+    return render_template('0-index.html')
