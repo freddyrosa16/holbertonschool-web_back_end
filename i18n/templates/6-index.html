@@ -1,12 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html dir="ltr" lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ title }}</title>
+    <!-- HEAD -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,
+    initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>{{ _('home_title') }}</title>
   </head>
   <body>
-    <h1>{{ header }}</h1>
-    <p>{{ welcome_message }}</p>
+    <!-- HEADER -->
+    <header>
+      <h1>{{ _('home_header') }}</h1>
+      {% if g.user %}
+      <p>{{ _('logged_in_as', username=g.user['name']) }}</p>
+      {% else %}
+      <p>{{ _('not_logged_in') }}</p>
+      {% endif %}
+    </header>
   </body>
 </html>
