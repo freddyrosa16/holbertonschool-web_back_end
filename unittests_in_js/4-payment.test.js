@@ -1,42 +1,20 @@
 const sinon = require("sinon");
+const expect = require("chai").expect;
+const sendPaymentRequestToApi = require("./3-payment");
 const Utils = require("./utils");
-const sendPaymentRequestToApi = require("./4-payment");
-const chai = require("chai");
 
-describe("sendPaymentRequestToApi", () => {
-  it("uses ``Utils.calculateNumber`` to calculate the total", () => {
-    const calculateNumberFakeResult = 10;
+describe("sendPaymentRequestToApi", function () {
+  it("should call Utils.calculateNumber with the correct arguments", function () {
+    const stub = sinon.stub(Utils, "calculateNumber").returns(10);
+    const spyConsole = sinon.spy(console, "log");
 
-    // THESE ARE APIS FOR THE METHODS,
-    // NOT THE OBJECTS.
-    // ``logSpy`` IS NOT AN IMPOSTOR FOR 'console',
-    // IT'S AN IMPOSTOR FOR 'console.log'.
-    // SAME TRUTH APPLIES TO ``calculateNumberStub``.
-    const calculateNumberStub = sinon
-      .stub(Utils, "calculateNumber")
-      .callsFake(() => calculateNumberFakeResult);
-    const logSpy = sinon.spy(console, "log");
+    sendPaymentRequestToApi(100, 20);
 
-    const args = [100, 20];
-    sendPaymentRequestToApi(...args);
+    expect(stub.calledOnce).to.be.true;
+    expect(stub.calledWith("SUM", 100, 20)).to.be.true;
+    expect(spyConsole.calledWith("The total is: 10")).to.be.true;
 
-    chai.expect(calculateNumberStub.calledOnce).to.be.true;
-    // DO NOT USE '.to.equal', THAT WILL FAIL.
-    // USE '.to.eql', WHICH CHECKS IF THE ARRAY'S
-    // CONTENTS ARE THE SAME, INSTEAD OF JS'
-    // [...] === [...] or [...] == [...],
-    // WHICH CHECKS IF THE ARRAYS ARE THE SAME
-    // OBJECT, SINCE ARRAYS ARE OBJECTS,
-    // AND OBJECTS ARE ONLY EQUAL IF THEY HAVE THE
-    // SAME IDENTITY (ADDR).
-    chai.expect(calculateNumberStub.getCall(0).args).to.eql(["SUM", ...args]);
-
-    chai.expect(logSpy.calledOnce);
-    chai
-      .expect(logSpy.getCall(0).args)
-      .to.eql([`The total is: ${calculateNumberFakeResult}`]);
-
-    calculateNumberStub.restore();
-    logSpy.restore();
+    stub.restore();
+    spyConsole.restore();
   });
 });
